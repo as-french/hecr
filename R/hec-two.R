@@ -6,6 +6,7 @@
 #' @param xy a coordinate or set of coordinates either in a dataframe or matrix structure. See
 #' details below for more information. 
 #' @param time_stamp return only values with this timestamp
+#' @param time_zone character string (e.g.., "UTC")
 #' @details 
 #' You can supply coordinates in as a matrix. The matrix must have two columns, 
 #' the first corresponding to the x the second to y. You can supply a dataframe 
@@ -26,16 +27,20 @@
 #' ws <- hec_two(f, xy=c(4567654.0, 2167453.0), "Water Surface", timestamp="2005-09-12 00:00:00")
 #' }
 #' @export
-hec_two <- function(hc, xy, ts_type = "Water Surface", time_stamp = NULL) {
+hec_two <- function(hc, xy, ts_type = "Water Surface", time_stamp = NULL, time_zone = NULL) {
   
-  timestamps <- hec_timestamps(hc)
+  if(is.null(time_zone)){
+    stop("Function cannot extract timestamps.\nSupply a string to the time_zone argument (e.g., 'UTC').")
+  }
+  
+  timestamps <- hec_timestamps(hc,time_zone = time_zone)
   area_name <- hec_flow_area(hc)
   model_center_coordinates <- hec_center_coords(hc, area_name)
   
   # if stamp is supplied make sure it exists, if it does use this as the 
   # single time to extract otherwise use all timestamps
   if (!is.null(time_stamp)) {
-    time_idx <- which(timestamps == time_stamp)
+    time_idx <- which(timestamps %in% time_stamp)
     if (length(time_idx) == 0) stop("supplied value for time_stamp was not found in the model", 
                                     call. = FALSE)
   } else {
@@ -47,12 +52,38 @@ hec_two <- function(hc, xy, ts_type = "Water Surface", time_stamp = NULL) {
   coordinates_df <- input_coordinates %>% 
     dplyr::mutate(
       nearest_cell_index = 
-        purrr::map2_dbl(x, y, ~get_nearest_cell_center_index(c(.x, .y), model_center_coordinates))
+        purrr::map2_dbl(.data$x, .data$y, ~get_nearest_cell_center_index(c(.x, .y), model_center_coordinates))
     ) %>% 
-    dplyr::distinct(nearest_cell_index, .keep_all = TRUE) %>% 
-    dplyr::arrange(nearest_cell_index)
+    dplyr::distinct(.data$nearest_cell_index, .keep_all = TRUE) %>% 
+    dplyr::arrange(.data$nearest_cell_index)
 
-  time_series <- hc$object[[hdf_paths$RES_2D_FLOW_AREAS]][[area_name]][[ts_type]][coordinates_df[["nearest_cell_index"]], time_idx]
+  # checking data type
+  # water and sediment
+  sed_bed_names <- hc$object[["Results"]][["Unsteady"]][["Output"]][["Output Blocks"]][["Sediment Bed"]][["Unsteady Time Series"]][["2D Flow Areas"]][["Perimeter 1"]]$names
+  sed_trans_names <- hc$object[["Results"]][["Unsteady"]][["Output"]][["Output Blocks"]][["Sediment Transport"]][["Unsteady Time Series"]][["2D Flow Areas"]][["Perimeter 1"]]$names
+  hydraulic_var_names <- hc$object[["Results"]][["Unsteady"]][["Output"]][["Output Blocks"]][["Base Output"]][["Unsteady Time Series"]][["2D Flow Areas"]][["Perimeter 1"]]$names
+  
+  # terrain
+  fixed_bed_var_names <- hc$object[["Geometry"]][["2D Flow Areas"]][["Perimeter 1"]]$names
+
+  if(ts_type %in% hydraulic_var_names){
+    time_series <- hc$object[[hdf_paths$RES_2D_FLOW_AREAS]][[area_name]][[ts_type]][coordinates_df[["nearest_cell_index"]], time_idx]
+  } else if(ts_type %in% sed_bed_names){
+    time_series <- hc$object[[hdf_paths$SED_BED_RES_2D_FLOW_AREAS]][[area_name]][[ts_type]][coordinates_df[["nearest_cell_index"]], time_idx]
+  } else if(ts_type %in% sed_trans_names){
+    time_series <- hc$object[[hdf_paths$SED_TRANS_RES_2D_FLOW_AREAS]][[area_name]][[ts_type]][coordinates_df[["nearest_cell_index"]], time_idx]
+  } else if(ts_type %in% fixed_bed_var_names){
+    time_series_prelim <- hc$object[[hdf_paths$GEOM_2D_AREAS]][[area_name]][[ts_type]][coordinates_df[["nearest_cell_index"]]]
+  
+    time_series_mat <- matrix(nrow = length(time_series_prelim),
+                                      ncol = length(timestamps))
+    
+    time_series_mat[,1:ncol(time_series_mat)] = time_series_prelim +0.005
+    colnames(time_series_mat) = timestamps
+    
+    time_series <- time_series_mat[coordinates_df[["nearest_cell_index"]], time_idx]
+    
+    }
 
   stacked_time_series <- matrix(t(time_series), ncol=1, byrow = TRUE)
   
@@ -74,12 +105,35 @@ hec_two <- function(hc, xy, ts_type = "Water Surface", time_stamp = NULL) {
 # INTERNALS
 
 hec_flow_area <- function(f) {
+  
+  if(!all(is.na(unlist(f$attrs)))){
+    # for ras 6.6
   path_to_areas <- "Results/Unsteady/Output/Output Blocks/Base Output/Unsteady Time Series/2D Flow Areas"
   names(f$object[[path_to_areas]])
-}
+  } else if(all(is.na(unlist(f$attrs)))){
+    # for RAS 2025
+    path_to_areas <- "Results/Output Blocks/Base Output/2D Flow Areas"
+    names(f$object[[path_to_areas]])
+  }
+  
+  }
 
 hec_center_coords <- function(f, area_name) {
   d <- f$object[[hdf_paths$GEOM_2D_AREAS]][[area_name]][["Cells Center Coordinate"]]
+  on.exit(d$close())
+  
+  return(d[,])
+}
+
+hec_perimeter_coords <- function(f, area_name) {
+  d <- f$object[[hdf_paths$GEOM_2D_AREAS]][[area_name]][["Perimeter"]]
+  on.exit(d$close())
+  
+  return(d[,])
+}
+
+hec_boundary_condition_lines <- function(f) {
+  d <- f$object[[hdf_paths$GEOM_BC_LINES]][["Polyline Points"]]
   on.exit(d$close())
   
   return(d[,])

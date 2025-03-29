@@ -6,6 +6,9 @@
 \usage{
 hecras_version(hdf5_object)
 }
+\arguments{
+\item{hdf5_object}{string path to hdf file}
+}
 \description{
 check hecras version
 }

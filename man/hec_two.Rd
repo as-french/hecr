@@ -4,7 +4,7 @@
 \alias{hec_two}
 \title{Query 2d Model Results}
 \usage{
-hec_two(hc, xy, ts_type = "Water Surface", time_stamp = NULL)
+hec_two(hc, xy, ts_type = "Water Surface", time_stamp = NULL, time_zone = NULL)
 }
 \arguments{
 \item{hc}{an hdf file read in with the hec_file() function}
@@ -15,6 +15,8 @@ details below for more information.}
 \item{ts_type}{the time series to extract}
 
 \item{time_stamp}{return only values with this timestamp}
+
+\item{time_zone}{character string (e.g.., "UTC")}
 }
 \description{
 hec_two allows you query a time series from a hec-ras model result

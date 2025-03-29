@@ -8,6 +8,6 @@ a user to quickly query out desired data in a tidy dataframe format.
 The install requires `devtools`, install with `install.packages("devtools")`.
 To install `hecr`:
 
-```r 
+```{r, eval = FALSE}
 devtools::install_github("flowwest/hecr")
 ```

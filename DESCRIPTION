@@ -15,18 +15,23 @@ Encoding: UTF-8
 LazyData: true
 Imports:
     tibble,
-    lubridate,
-    magrittr,
     stringr,
-    tidyr,
-    config,
     dplyr,
     purrr,
     hdf5r,
-    memoise
-RoxygenNote: 6.1.1
+    glue,
+    geos,
+    sf,
+    nngeo,
+    units,
+    stats
+RoxygenNote: 7.3.2
 Suggests:
+    ggnewscale,
+    ggplot2,
     knitr,
+    metR,
     rmarkdown,
+    scales,
     testthat
 VignetteBuilder: knitr

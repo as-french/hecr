@@ -1,9 +1,10 @@
 #' \code{hecr} package
-#' 
+"_PACKAGE"
+
 #' hecr an R interface to HEC-Ras Output
 #' 
-#' @docType package
 #' @name hecr
-#' @importFrom dplyr %>%
+#' @importFrom dplyr %>% .data
+#' @importFrom stats complete.cases
 #' 
 NULL

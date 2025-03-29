@@ -41,20 +41,6 @@ hec_datasets <- function(hc, domain=NULL) {
   )
 }
 
-
-#' Print datasets
-#' @export
-print.hec_datasets <- function(x, ...) {
-  if (!is.null(x$one)) {
-    cat('One Dim ------\n')
-    print(dplyr::select(x$one, name, "dim" = dataset.dims))
-  }
-  if (!is.null(x$two)) {
-    cat('Two Dim ------\n')
-    print(dplyr::select(x$two, name, "dim" = dataset.dims))
-  }
-}
-
 # operates on a hec object
 has_crossections <- function(hc) {
   "Cross Sections" %in% names(hc$object[["Geometry"]])
@@ -66,15 +52,32 @@ has_2d <- function(hc) {
 }
 
 # operates on a hec object
-hec_timestamps <- function(hc) {
+#' Get timestamps
+#' @param hc a "hec" object 
+#' @param time_zone a character string (e.g., "UTC")
+#' @export
+hec_timestamps <- function(hc, time_zone = "UTC") {
+  # for hec ras 6.6
+  if(!all(is.na(unlist(hc$attrs)))){
   as.POSIXct(hc$object[["Results/Unsteady/Output/Output Blocks/Base Output/Unsteady Time Series/Time Date Stamp"]]$read(), 
-             format = "%d%b%Y %H:%M:%S")
+             format = "%d%b%Y %H:%M:%S",tz = time_zone)
+  } else if(all(is.na(unlist(hc$attrs)))){
+  # for RAS 2025
+  as.POSIXct(hc$object[["Results/Output Blocks/Base Output/Time"]]$read(), 
+             format = "%d%b%Y %H:%M:%S",tz = time_zone)
+  }
 }
 
 # opearates on a hec object
 get_plan_area <- function(hc) {
+  # for hec ras 6.6
+  if(!all(is.na(unlist(hc$attrs)))){
   trimws(hc$object[["Results/Unsteady/Output/Output Blocks/Base Output/Unsteady Time Series/2D Flow Areas/"]]$ls()$name[1])
-}
+  } else if(all(is.na(unlist(hc$attrs)))){
+    # for RAS 2025
+    trimws(hc$object[["Results/Output Blocks/Base Output/2D Flow Areas/"]]$ls()$name[1])
+  }
+    }
 
 
 

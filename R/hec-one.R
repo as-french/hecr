@@ -4,6 +4,7 @@
 #' @param hc a hec object. See ?hec_file for more.
 #' @param station_name name(s) for station(s) defined in the model run. See ?hec_crosssections for more.
 #' @param ts_type a valid time series type defined in the model run
+#' @param time_stamp A datetime to search for in model output hdf. 
 #' @export 
 #' @examples 
 #' \dontrun{

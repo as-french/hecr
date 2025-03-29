@@ -12,6 +12,8 @@ hec_one(hc, station_name, ts_type, time_stamp = NULL)
 \item{station_name}{name(s) for station(s) defined in the model run. See ?hec_crosssections for more.}
 
 \item{ts_type}{a valid time series type defined in the model run}
+
+\item{time_stamp}{A datetime to search for in model output hdf.}
 }
 \description{
 provide station(s), a type of time series and optionally a timestamp
