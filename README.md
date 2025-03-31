@@ -84,7 +84,7 @@ cell center velocity, sediment load (among many potential others).
 
 ``` r
 
- path = system.file("extdata\\Chippewa_2D.p05.hdf",
+ path = system.file("extdata\\chippewa.hdf",
                     package = "hecr")
 
  # RAS 2025 compatability is not yet implemented because h5 files are separate

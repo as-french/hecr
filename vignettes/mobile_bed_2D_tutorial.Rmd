@@ -4,7 +4,7 @@ author: "Andrew French"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Mobile bed 2D example}
+  %\VignetteIndexEntry{Mobile bed 2D example HEC-RAS 6.6}
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
 editor_options: 
@@ -38,6 +38,9 @@ many potential others).
 ## Read and Explore 
 
 ```{r setup, include = FALSE}
+# Note, this was used to render this vignette to md
+# rmarkdown::render(paste0(<insert_full_path_to_rmd_here>), clean=FALSE)
+
 # Run this line in case of a clash of proj versions with postgis installed separately,
 # https://github.com/rspatial/terra/issues/1378#issuecomment-1864893650
 plib <- Sys.getenv("PROJ_LIB")
@@ -82,7 +85,7 @@ library(scales)
 
 ```{r read_hdf}
 
- path = system.file("extdata\\Chippewa_2D.p05.hdf",
+ path = system.file("extdata\\chippewa.hdf",
                     package = "hecr")
 
  # RAS 2025 compatability is not yet implemented because h5 files are separate

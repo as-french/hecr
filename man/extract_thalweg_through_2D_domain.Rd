@@ -47,7 +47,7 @@ Note, only one thalweg will be generated, which can lead to
   domains.
 }
 \examples{
-path = system.file("extdata\\\\Chippewa_2D.p05.hdf",package = "hecr")
+path = system.file("extdata\\\\chippewa.hdf",package = "hecr")
 h <- hecr::hec_file(path)
 
 crs_prj <- sf::read_sf(system.file("extdata\\\\profile_lines.shp",

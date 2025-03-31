@@ -1,10 +1,10 @@
 ---
 title: "Mobile bed 2D example HEC-RAS 6.6"
 author: "Andrew French"
-date: "2025-03-29"
+date: "2025-03-31"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Mobile bed 2D example}
+  %\VignetteIndexEntry{Mobile bed 2D example HEC-RAS 6.6}
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
 editor_options: 
@@ -44,7 +44,7 @@ many potential others).
 
 ``` r
 
- path = system.file("extdata\\Chippewa_2D.p05.hdf",
+ path = system.file("extdata\\chippewa.hdf",
                     package = "hecr")
 
  # RAS 2025 compatability is not yet implemented because h5 files are separate
@@ -79,8 +79,8 @@ model 2D domain.
  upstream_bc <- hecr::get_upstream_boundary_condition(hc = h,
                                                 time_zone = "America/Chicago",
                        verbose = TRUE)
-#> Extracting upstream boundary conditions...[2025-03-29 00:08:36.865289]
-#> Done![2025-03-29 00:08:36.952783]
+#> Extracting upstream boundary conditions...[2025-03-31 13:26:14.737457]
+#> Done![2025-03-31 13:26:14.82264]
  
 # p1 <-
   upstream_bc |>

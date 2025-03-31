@@ -12,7 +12,7 @@
 #' @return A sfc POINT object containing all computational cell points to be
 #'   joined to modelled parameters (e.g., WSE)
 #' @examples
-#' path = system.file("extdata\\Chippewa_2D.p05.hdf",package = "hecr")
+#' path = system.file("extdata\\chippewa.hdf",package = "hecr")
 #' h <- hecr::hec_file(path)
 #' 
 #' crs_prj <- sf::read_sf(system.file("extdata\\profile_lines.shp",

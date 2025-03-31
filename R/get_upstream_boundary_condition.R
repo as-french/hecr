@@ -6,7 +6,7 @@
 #' @details This function retrieves boundary condition time series related to
 #'   upstream boundary condition lines.
 #' @examples
-#' path = system.file("extdata\\Chippewa_2D.p05.hdf",package = "hecr")
+#' path = system.file("extdata\\chippewa.hdf",package = "hecr")
 #' h <- hecr::hec_file(path)
 #' 
 #' upstream_bc <- get_upstream_boundary_condition(hc = h,
